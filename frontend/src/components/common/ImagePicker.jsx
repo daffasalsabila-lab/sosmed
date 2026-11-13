@@ -7,7 +7,7 @@ import { assetUrl } from '@/lib/http';
 import { cn } from '@/lib/utils';
 
 const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
-const MAX_SIZE = 2 * 1024 * 1024;
+const MAX_SIZE = 5 * 1024 * 1024;
 
 /**
  * Pemilih gambar: unggah berkas ATAU tempel URL.
@@ -26,14 +26,15 @@ export default function ImagePicker({ value, onChange, fallbackPreview, variant 
     e.target.value = '';
     if (!file) return;
     if (!ALLOWED.includes(file.type)) return toast.error('Format gambar harus JPG, PNG, WEBP, atau GIF');
-    if (file.size > MAX_SIZE) return toast.error('Ukuran gambar maksimal 2 MB');
+  if (file.size > MAX_SIZE) return toast.error('Ukuran gambar maksimal 5 MB'); // sesuaikan angkanya
     onChange({ file, url: '' });
   };
 
   return (
     <div className="space-y-2">
       {preview && (
-        <div className="relative inline-block">
+        //ini tempat foto profil, untuk foto ke kiri pake relative inline-block
+        <div className="flex flex-col items-center relative">
           <img
             src={preview}
             alt="Pratinjau"

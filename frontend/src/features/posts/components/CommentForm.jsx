@@ -12,7 +12,7 @@ import { createComment } from '../api';
 
 const EMPTY_IMAGE = { file: null, url: '' };
 
-export default function CommentForm({ postId, onCreated }) {
+export default function CommentForm({ postId, parentId, onCreated, onCancel }) {
   const { user } = useAuth();
   const [image, setImage] = useState(EMPTY_IMAGE);
   const [showImage, setShowImage] = useState(false);
@@ -28,7 +28,12 @@ export default function CommentForm({ postId, onCreated }) {
       return toast.error('Tulis komentar atau lampirkan gambar');
     }
     try {
-      const created = await createComment(postId, { comment: comment.trim(), imageUrl: image.url.trim(), file: image.file });
+      const created = await createComment(postId, {
+        comment: comment.trim(),
+        imageUrl: image.url.trim(),
+        file: image.file,
+        parentId,
+      });
       onCreated(created);
       reset();
       setImage(EMPTY_IMAGE);
@@ -44,7 +49,7 @@ export default function CommentForm({ postId, onCreated }) {
       <div className="min-w-0 flex-1 space-y-2">
         <div className="flex gap-2">
           <Input
-            placeholder="Tulis komentar..."
+            placeholder={parentId ? 'Tulis balasan...' : 'Tulis komentar...'}
             maxLength={1000}
             aria-label="Tulis komentar"
             {...register('comment')}
@@ -64,6 +69,13 @@ export default function CommentForm({ postId, onCreated }) {
           </Button>
         </div>
         {showImage && <ImagePicker compact value={image} onChange={setImage} disabled={isSubmitting} />}
+        {onCancel && (
+          <div className="flex justify-end">
+            <Button type="button" variant="ghost" size="sm" onClick={onCancel} disabled={isSubmitting}>
+              Batal membalas
+            </Button>
+          </div>
+        )}
       </div>
     </form>
   );

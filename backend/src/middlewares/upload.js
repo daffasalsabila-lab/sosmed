@@ -11,7 +11,7 @@ const MIME_EXT = {
   'image/webp': '.webp',
   'image/gif': '.gif',
 };
-const MAX_SIZE = 2 * 1024 * 1024; // 2 MB
+const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -47,7 +47,7 @@ export const uploadImage = (field) => (req, res, next) => {
   upload.single(field)(req, res, async (err) => {
     if (err) {
       if (err instanceof multer.MulterError) {
-        const msg = err.code === 'LIMIT_FILE_SIZE' ? 'Ukuran gambar maksimal 2 MB' : 'Berkas tidak valid';
+        const msg = err.code === 'LIMIT_FILE_SIZE' ? 'Ukuran gambar maksimal 5 MB' : 'Berkas tidak valid';
         return next(ApiError.unprocessable(msg));
       }
       return next(err);

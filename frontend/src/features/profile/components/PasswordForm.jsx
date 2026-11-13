@@ -30,7 +30,7 @@ export default function PasswordForm() {
   };
 
   return (
-    <Card>
+    <Card id="ubah-password">
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <CardHeader>
           <CardTitle>Ubah password</CardTitle>

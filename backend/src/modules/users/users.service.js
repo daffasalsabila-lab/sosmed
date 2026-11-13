@@ -5,6 +5,25 @@ import { ApiError } from '../../utils/ApiError.js';
 import { removeLocalFile, resolveImage } from '../../utils/files.js';
 import { toPublicUser } from '../../utils/serializers.js';
 
+export async function getPublicProfile(userId) {
+  const profile = await prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      avatar: true,
+      bio: true,
+      createdAt: true,
+    },
+  });
+
+  if (!profile) {
+    throw ApiError.notFound('Profil tidak ditemukan');
+  }
+
+  return profile;
+}
+
 export async function updateProfile(user, { name, bio, avatarUrl }, file) {
   const newAvatar = resolveImage(file, avatarUrl);
   const avatar = newAvatar || user.avatar; // tanpa input baru, foto lama dipertahankan

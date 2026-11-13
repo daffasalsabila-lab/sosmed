@@ -40,16 +40,17 @@ export default function ProfileForm() {
   };
 
   return (
-    <Card>
+    <Card id="edit-profil">
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <CardHeader>
           <CardTitle>Edit profil</CardTitle>
           <CardDescription>Perbarui nama, bio, dan foto profil Anda.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <FormField label="Foto profil" hint="Unggah berkas (maks. 2 MB) atau tempel URL gambar.">
+          <FormField label="Foto profil" hint="Unggah berkas (maks. 5 MB) atau tempel URL gambar.">
             <ImagePicker variant="avatar" value={avatar} onChange={setAvatar} fallbackPreview={user.avatar} disabled={isSubmitting} />
           </FormField>
+            
           <FormField id="name" label="Nama pengguna" error={errors.name?.message}>
             <Input
               id="name"
@@ -69,6 +70,7 @@ export default function ProfileForm() {
               {...register('bio', { maxLength: { value: 500, message: 'Bio maksimal 500 karakter' } })}
             />
           </FormField>
+
           {errors.root && <p className="text-xs font-medium text-destructive">{errors.root.message}</p>}
         </CardContent>
         <CardFooter className="justify-end">

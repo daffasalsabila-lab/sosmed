@@ -8,7 +8,7 @@ const mergeUnique = (prev, next) => {
   return [...prev, ...next.filter((p) => !seen.has(p.id))];
 };
 
-export function useFeed() {
+export function useFeed(userId) {
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(false);
@@ -17,7 +17,12 @@ export function useFeed() {
 
   useEffect(() => {
     let active = true;
-    fetchPosts(1)
+    setPosts([]);
+    setPage(1);
+    setHasMore(false);
+    setLoading(true);
+    setLoadingMore(false);
+    fetchPosts(1, 10, userId)
       .then(({ posts: rows, meta }) => {
         if (!active) return;
         setPosts(rows);
@@ -28,12 +33,12 @@ export function useFeed() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [userId]);
 
   const loadMore = useCallback(async () => {
     setLoadingMore(true);
     try {
-      const { posts: rows, meta } = await fetchPosts(page + 1);
+      const { posts: rows, meta } = await fetchPosts(page + 1, 10, userId);
       setPosts((prev) => mergeUnique(prev, rows));
       setPage(page + 1);
       setHasMore(meta.hasMore);
@@ -42,7 +47,7 @@ export function useFeed() {
     } finally {
       setLoadingMore(false);
     }
-  }, [page]);
+  }, [page, userId]);
 
   const addPost = useCallback((post) => setPosts((prev) => [post, ...prev]), []); // terbaru di paling atas
   const removePost = useCallback((id) => setPosts((prev) => prev.filter((p) => p.id !== id)), []);

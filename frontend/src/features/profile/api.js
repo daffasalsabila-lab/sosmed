@@ -1,5 +1,8 @@
 import { http } from '@/lib/http';
 
+export const fetchPublicProfile = (userId) =>
+  http.get(`/users/${userId}`).then((r) => r.data.data.user);
+
 export const updateProfile = ({ name, bio, avatarUrl, file }) => {
   const fd = new FormData();
   fd.append('name', name);
