@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { Loader2, MapPin } from 'lucide-react';
+import { Loader2, MapPin, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { reverseGeocode } from '../location';
 
 const positionErrorMessage = (error, permissionState) => {
   if (error.code === 1) {
@@ -40,6 +41,14 @@ const resolvePositionError = async (error, permissionPromise) => {
 export default function LocationPicker({ value, onChange, onRemove, disabled }) {
   const [loading, setLoading] = useState(false);
 
+  const removeLocation = () => {
+    if (onRemove) {
+      onRemove();
+    } else {
+      onChange(null);
+    }
+  };
+
   const getLocation = () => {
     if (!window.isSecureContext) {
       toast.error('Lokasi hanya tersedia melalui HTTPS atau localhost. Buka situs dengan koneksi aman.');
@@ -58,11 +67,23 @@ export default function LocationPicker({ value, onChange, onRemove, disabled }) 
 
     setLoading(true);
     const permissionPromise = getPermissionState();
+
     navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        onChange({ latitude: coords.latitude, longitude: coords.longitude });
-        setLoading(false);
-        toast.success('Lokasi berhasil ditambahkan');
+      async ({ coords }) => {
+        const lat = coords.latitude;
+        const lon = coords.longitude;
+        let locationName = null;
+
+        try {
+          locationName = await reverseGeocode(lat, lon);
+        } catch (error) {
+          console.error('Gagal mengambil nama lokasi:', error);
+          toast.warning('Lokasi ditambahkan, tetapi nama lokasi tidak dapat dimuat.');
+        } finally {
+          onChange({ latitude: lat, longitude: lon, name: locationName });
+          setLoading(false);
+          if (locationName) toast.success('Lokasi berhasil ditambahkan');
+        }
       },
       async (error) => {
         setLoading(false);
@@ -74,20 +95,32 @@ export default function LocationPicker({ value, onChange, onRemove, disabled }) 
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <Button type="button" variant="outline" size="sm" onClick={getLocation} disabled={disabled || loading}>
-        {loading ? <Loader2 className="animate-spin" /> : <MapPin />}
-        {value ? 'Perbarui lokasi' : 'Tambahkan lokasi'}
+      <Button
+        type="button"
+        variant={value ? 'secondary' : 'outline'}
+        size="sm"
+        onClick={value ? removeLocation : getLocation}
+        disabled={disabled || loading}
+        aria-pressed={Boolean(value)}
+      >
+        {loading ? <Loader2 className="animate-spin" /> : value ? <X /> : <MapPin />}
+        {value ? 'Batalkan lokasi' : 'Tambahkan lokasi'}
       </Button>
       {value && (
         <>
-          <span className="text-xs text-muted-foreground" aria-live="polite">
-            {value.latitude.toFixed(5)}, {value.longitude.toFixed(5)}
-          </span>
-          {onRemove && (
-            <Button type="button" variant="ghost" size="sm" onClick={onRemove} disabled={disabled || loading}>
-              Hapus lokasi
-            </Button>
-          )}
+          <Button type="button" variant="outline" size="sm" onClick={getLocation} disabled={disabled || loading}>
+            <MapPin /> Perbarui lokasi
+          </Button>
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${value.latitude},${value.longitude}`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="max-w-xs truncate text-xs text-muted-foreground underline-offset-4 hover:text-primary hover:underline"
+            title="Lihat lokasi di Google Maps"
+            aria-label={`Lihat ${value.name || 'lokasi ini'} di Google Maps`}
+          >
+            {value.name || 'Nama lokasi tidak tersedia'}
+          </a>
         </>
       )}
     </div>

@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { useAuth } from '@/features/auth/AuthContext';
 import { getErrorMessage } from '@/lib/http';
 import { createComment } from '../api';
+import LocationPicker from './LocationPicker';
 
 const EMPTY_IMAGE = { file: null, url: '' };
 
@@ -16,6 +17,7 @@ export default function CommentForm({ postId, parentId, onCreated, onCancel }) {
   const { user } = useAuth();
   const [image, setImage] = useState(EMPTY_IMAGE);
   const [showImage, setShowImage] = useState(false);
+  const [location, setLocation] = useState(null);
   const {
     register,
     handleSubmit,
@@ -24,8 +26,8 @@ export default function CommentForm({ postId, parentId, onCreated, onCancel }) {
   } = useForm({ defaultValues: { comment: '' } });
 
   const onSubmit = async ({ comment }) => {
-    if (!comment.trim() && !image.file && !image.url.trim()) {
-      return toast.error('Tulis komentar atau lampirkan gambar');
+    if (!comment.trim() && !image.file && !image.url.trim() && !location) {
+      return toast.error('Tulis komentar, lampirkan gambar, atau tambahkan lokasi');
     }
     try {
       const created = await createComment(postId, {
@@ -33,11 +35,15 @@ export default function CommentForm({ postId, parentId, onCreated, onCancel }) {
         imageUrl: image.url.trim(),
         file: image.file,
         parentId,
+        latitude: location?.latitude,
+        longitude: location?.longitude,
+        locationName: location?.name,
       });
       onCreated(created);
       reset();
       setImage(EMPTY_IMAGE);
       setShowImage(false);
+      setLocation(null);
     } catch (err) {
       toast.error(getErrorMessage(err));
     }
@@ -69,6 +75,7 @@ export default function CommentForm({ postId, parentId, onCreated, onCancel }) {
           </Button>
         </div>
         {showImage && <ImagePicker compact value={image} onChange={setImage} disabled={isSubmitting} />}
+        <LocationPicker value={location} onChange={setLocation} disabled={isSubmitting} />
         {onCancel && (
           <div className="flex justify-end">
             <Button type="button" variant="ghost" size="sm" onClick={onCancel} disabled={isSubmitting}>

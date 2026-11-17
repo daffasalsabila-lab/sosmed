@@ -1,0 +1,7 @@
+ALTER TABLE `posts`
+ADD COLUMN `location_name` VARCHAR(500) NULL;
+
+ALTER TABLE `comments`
+ADD COLUMN `latitude` DOUBLE NULL,
+ADD COLUMN `longitude` DOUBLE NULL,
+ADD COLUMN `location_name` VARCHAR(500) NULL;

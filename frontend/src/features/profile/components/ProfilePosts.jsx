@@ -10,7 +10,7 @@ export default function ProfilePosts({ userId }) {
 
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-semibold">Postingan</h2>
+      <h2 className="text-lg font-semibold text-white">Postingan</h2>
       {loading ? (
         <div className="space-y-4">
           {[0, 1].map((item) => <Skeleton key={item} className="h-40 w-full rounded-xl" />)}

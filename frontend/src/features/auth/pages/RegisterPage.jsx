@@ -34,7 +34,7 @@ export default function RegisterPage() {
   return (
     <AuthShell
       title="Buat akun"
-      description="Daftar untuk mulai berbagi di ConnectSpace."
+      description="Daftar untuk mulai berbagi cerita di ConnectSpace."
       footer={
         <>
           Sudah punya akun?{' '}

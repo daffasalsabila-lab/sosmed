@@ -21,6 +21,7 @@ export const toPostDto = (p) => ({
   image: p.image,
   latitude: p.latitude,
   longitude: p.longitude,
+  locationName: p.locationName,
   createdAt: p.createdAt,
   updatedAt: p.updatedAt,
   user: p.user,
@@ -52,7 +53,7 @@ export async function list(viewerId, { page, limit, userId }) {
 // ==============================
 // MEMBUAT POSTINGAN
 // ==============================
-export async function create(user, { content, imageUrl, latitude, longitude }, file) {
+export async function create(user, { content, imageUrl, latitude, longitude, locationName }, file) {
   const image = resolveImage(file, imageUrl);
   const text = content?.trim() || null;
 
@@ -75,6 +76,7 @@ export async function create(user, { content, imageUrl, latitude, longitude }, f
       image,
       latitude: latitude ?? null,
       longitude: longitude ?? null,
+      locationName: locationName?.trim() || null,
     },
     include: includeFor(user.id),
   });
@@ -110,6 +112,7 @@ export async function update(user, postId, body, file) {
   let image = post.image;
   let latitude = post.latitude;
   let longitude = post.longitude;
+  let locationName = post.locationName;
 
   if (file) {
     image = resolveImage(file, null);
@@ -120,9 +123,11 @@ export async function update(user, postId, body, file) {
   if (body.removeLocation) {
     latitude = null;
     longitude = null;
+    locationName = null;
   } else if (Object.hasOwn(body, 'latitude') && Object.hasOwn(body, 'longitude')) {
     latitude = body.latitude;
     longitude = body.longitude;
+    locationName = body.locationName?.trim() || null;
   }
 
   // Postingan tidak boleh kosong.
@@ -139,6 +144,7 @@ export async function update(user, postId, body, file) {
       image,
       latitude,
       longitude,
+      locationName,
       updatedAt: new Date(),
     },
     include: includeFor(user.id),

@@ -12,6 +12,7 @@ export default function ContentEditForm({
   label,
   maxLength,
   allowLocation = false,
+  allowLocationOnly = false,
   initialLocation = null,
   onSave,
   onCancel,
@@ -37,7 +38,13 @@ export default function ContentEditForm({
       setError('text', { message: `Maksimal ${maxLength} karakter` });
       return;
     }
-    if (!trimmedText && !imageValue.file && !imageValue.url.trim() && (!image || removeImage)) {
+    if (
+      !trimmedText
+      && !imageValue.file
+      && !imageValue.url.trim()
+      && (!image || removeImage)
+      && !(allowLocationOnly && location && !removeLocation)
+    ) {
       setError('text', { message: `Isi teks atau lampirkan gambar` });
       return;
     }
@@ -49,6 +56,7 @@ export default function ContentEditForm({
       ...(allowLocation ? {
         latitude: location?.latitude,
         longitude: location?.longitude,
+        locationName: location?.name,
         removeLocation,
       } : {}),
     });

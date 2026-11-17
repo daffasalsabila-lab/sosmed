@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Heart, MapPin, MessageCircle, Pencil, Trash2 } from 'lucide-react';
+import { Heart, MessageCircle, Pencil, Trash2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import UserAvatar from '@/components/common/UserAvatar';
@@ -23,6 +23,7 @@ import { cn } from '@/lib/utils';
 import { deletePost, toggleLike, updatePost } from '../api';
 import CommentSection from './CommentSection';
 import ContentEditForm from './ContentEditForm';
+import LocationDisplay from './LocationDisplay';
 
 export default function PostCard({ post, onDeleted, onChange }) {
   const { user } = useAuth();
@@ -90,13 +91,13 @@ export default function PostCard({ post, onDeleted, onChange }) {
               {post.user.name}
             </Link>
             <div className="flex flex-wrap items-center gap-x-2">
-              {post.latitude != null && post.longitude != null && (
-                <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-                  <MapPin className="h-3 w-3" aria-hidden="true" />
-                  {post.latitude.toFixed(5)}, {post.longitude.toFixed(5)}
-                </span>
-              )}
-              <time className="text-xs text-muted-foreground" title={fullDate(post.createdAt)} dateTime={post.createdAt}>
+              <LocationDisplay
+                latitude={post.latitude}
+                longitude={post.longitude}
+                locationName={post.locationName}
+              />
+              <time className="text-xs text-muted-foreground" 
+              title={fullDate(post.createdAt)} dateTime={post.createdAt}>
                 {timeAgo(post.createdAt)}
               </time>
             </div>
@@ -149,7 +150,7 @@ export default function PostCard({ post, onDeleted, onChange }) {
             allowLocation
             initialLocation={
               post.latitude != null && post.longitude != null
-                ? { latitude: post.latitude, longitude: post.longitude }
+                ? { latitude: post.latitude, longitude: post.longitude, name: post.locationName }
                 : null
             }
             label="Edit status"

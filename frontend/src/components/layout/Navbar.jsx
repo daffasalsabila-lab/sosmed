@@ -46,11 +46,11 @@ export default function Navbar() {
   };
 
   const menuItem =
-    'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-700 transition hover:bg-sky-50 hover:text-sky-700';
+    'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-slate-700 transition hover:bg-[#E3F2FD] hover:text-[#0D47A1]';
 
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-sky-200/80 bg-white/90 shadow-sm backdrop-blur-md">
+      <header className="sticky top-0 z-40 border-b border-[#90CAF9]/70 bg-white/90 shadow-sm backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-2xl items-center justify-between px-4">
 
           {/* Logo */}
@@ -58,9 +58,9 @@ export default function Navbar() {
             <img
               src={logoImage}
               alt="ConnectSpace"
-              className="h-9 w-9 rounded-xl border border-sky-200 object-cover shadow-sm"
+              className="h-9 w-9 rounded-xl border border-[#90CAF9] object-cover shadow-sm"
             />
-            <span className="text-lg font-bold tracking-tight text-sky-950">
+            <span className="text-lg font-bold tracking-tight text-[#0D47A1]">
               ConnectSpace
             </span>
           </Link>
@@ -72,16 +72,16 @@ export default function Navbar() {
               onClick={() => setMenuOpen((prev) => !prev)}
               aria-expanded={menuOpen}
               aria-label="Menu akun"
-              className="flex items-center gap-2 rounded-full px-2 hover:bg-sky-100"
+              className="flex items-center gap-2 rounded-full px-2 hover:bg-[#E3F2FD]"
             >
               <UserAvatar user={user} className="h-8 w-8" />
 
-              <span className="hidden max-w-[10rem] truncate font-medium text-sky-900 sm:inline">
+              <span className="hidden max-w-[10rem] truncate font-medium text-[#0D47A1] sm:inline">
                 {user?.name}
               </span>
 
               <ChevronDown
-                className={`h-4 w-4 text-sky-700 transition-transform ${
+                className={`h-4 w-4 text-[#2196F3] transition-transform ${
                   menuOpen ? 'rotate-180' : ''
                 }`}
               />
@@ -97,9 +97,9 @@ export default function Navbar() {
                   onClick={() => setMenuOpen(false)}
                 />
 
-                <div className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-xl border border-sky-100 bg-white p-2 shadow-xl">
+                <div className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-xl border border-[#90CAF9]/60 bg-white p-2 shadow-xl">
 
-                  <div className="border-b border-sky-100 px-3 py-3">
+                  <div className="border-b border-[#90CAF9]/60 px-3 py-3">
                     <p className="truncate text-sm font-semibold text-slate-800">
                       {user?.name}
                     </p>
@@ -140,7 +140,7 @@ export default function Navbar() {
 
                   </div>
 
-                  <div className="border-t border-sky-100 pt-2">
+                  <div className="border-t border-[#90CAF9]/60 pt-2">
                     <button
                       type="button"
                       onClick={() => {

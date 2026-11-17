@@ -4,13 +4,14 @@ export const createPostSchema = Joi.object({
   content: Joi.string().trim().max(500).allow('', null).label('Status'),
   latitude: Joi.number().min(-90).max(90),
   longitude: Joi.number().min(-180).max(180),
+  locationName: Joi.string().trim().max(500).allow('', null).label('Nama lokasi'),
   imageUrl: Joi.string()
     .trim()
     .uri({ scheme: ['http', 'https'] })
     .max(255)
     .allow('', null)
     .label('URL gambar'),
-}).and('latitude', 'longitude');
+}).and('latitude', 'longitude').with('locationName', ['latitude', 'longitude']);
 
 // edit dan delete
 // Validasi ini memungkinkan pengguna:
@@ -28,6 +29,7 @@ export const updatePostSchema = Joi.object({
 
   latitude: Joi.number().min(-90).max(90),
   longitude: Joi.number().min(-180).max(180),
+  locationName: Joi.string().trim().max(500).allow('', null).label('Nama lokasi'),
   removeLocation: Joi.boolean(),
   imageUrl: Joi.string()
     .trim()
@@ -35,4 +37,4 @@ export const updatePostSchema = Joi.object({
     .max(255)
     .allow('', null)
     .label('URL gambar'),
-}).and('latitude', 'longitude');
+}).and('latitude', 'longitude').with('locationName', ['latitude', 'longitude']);

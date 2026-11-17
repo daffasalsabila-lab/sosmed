@@ -46,6 +46,7 @@ export default function PostComposer({ onCreated }) {
         file: image.file,
         latitude: location?.latitude,
         longitude: location?.longitude,
+        locationName: location?.name,
       });
       onCreated(post);
       reset();
@@ -93,7 +94,7 @@ export default function PostComposer({ onCreated }) {
               <Button 
                 type="submit" 
                 disabled={isSubmitting || exceedsLimit}
-                className="bg-sky-500 text-white hover:bg-purple-700 shadow-sm rounded-xl"
+                className="rounded-xl bg-[#2196F3] text-white shadow-sm hover:bg-[#0D47A1]"
               >
                 {isSubmitting ? <Loader2 className="animate-spin" /> : <Send />} Posting
               </Button>

@@ -14,6 +14,9 @@ const selectFor = (viewerId) => ({
   parentId: true,
   comment: true,
   image: true,
+  latitude: true,
+  longitude: true,
+  locationName: true,
   createdAt: true,
   updatedAt: true,
   user: { select: userSelect },
@@ -31,6 +34,9 @@ const toCommentDto = (comment) => ({
   parentId: comment.parentId,
   comment: comment.comment,
   image: comment.image,
+  latitude: comment.latitude,
+  longitude: comment.longitude,
+  locationName: comment.locationName,
   createdAt: comment.createdAt,
   updatedAt: comment.updatedAt,
   user: comment.user,
@@ -73,7 +79,12 @@ export async function list(postId, viewerId) {
 // ==================================
 // MEMBUAT KOMENTAR
 // ==================================
-export async function create(user, postId, { comment, imageUrl, parentId }, file) {
+export async function create(
+  user,
+  postId,
+  { comment, imageUrl, parentId, latitude, longitude, locationName },
+  file,
+) {
   await assertPostExists(postId);
 
   if (parentId) {
@@ -90,13 +101,14 @@ export async function create(user, postId, { comment, imageUrl, parentId }, file
   const image = resolveImage(file, imageUrl);
   const text = comment?.trim() || null;
 
-  if (!text && !image) {
+  const hasLocation = latitude != null && longitude != null;
+  if (!text && !image && !hasLocation) {
     throw ApiError.unprocessable(
       'Komentar tidak boleh kosong: isi teks atau lampirkan gambar',
       [
         {
           field: 'comment',
-          message: 'Isi komentar atau lampirkan gambar',
+          message: 'Isi komentar, lampirkan gambar, atau tambahkan lokasi',
         },
       ]
     );
@@ -109,6 +121,9 @@ export async function create(user, postId, { comment, imageUrl, parentId }, file
       parentId: parentId || null,
       comment: text,
       image,
+      latitude: latitude ?? null,
+      longitude: longitude ?? null,
+      locationName: locationName?.trim() || null,
     },
     select: selectFor(user.id),
   });
@@ -178,6 +193,9 @@ export async function update(user, postId, commentId, body, file) {
 
   // Pertahankan gambar lama jika tidak ada perubahan.
   let image = existingComment.image;
+  let latitude = existingComment.latitude;
+  let longitude = existingComment.longitude;
+  let locationName = existingComment.locationName;
 
   if (file) {
     image = resolveImage(file, null);
@@ -185,8 +203,18 @@ export async function update(user, postId, commentId, body, file) {
     image = body.imageUrl?.trim() || null;
   }
 
+  if (body.removeLocation) {
+    latitude = null;
+    longitude = null;
+    locationName = null;
+  } else if (Object.hasOwn(body, 'latitude') && Object.hasOwn(body, 'longitude')) {
+    latitude = body.latitude;
+    longitude = body.longitude;
+    locationName = body.locationName?.trim() || null;
+  }
+
   // Komentar tidak boleh kosong.
-  if (!text && !image) {
+  if (!text && !image && !(latitude != null && longitude != null)) {
     throw ApiError.unprocessable(
       'Komentar tidak boleh kosong: isi teks atau lampirkan gambar'
     );
@@ -199,6 +227,9 @@ export async function update(user, postId, commentId, body, file) {
     data: {
       comment: text,
       image,
+      latitude,
+      longitude,
+      locationName,
       updatedAt: new Date(),
     },
     select: selectFor(user.id),
